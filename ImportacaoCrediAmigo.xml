@@ -1,0 +1,21 @@
+<GenericParser>
+    <ColumnWidths>
+		<ColumnWidth columnName="CodigoAgencia">3</ColumnWidth>
+		<ColumnWidth columnName="CpfCnpjAgencia">14</ColumnWidth>
+		<ColumnWidth columnName="CpfCnpj">11</ColumnWidth>
+		<ColumnWidth columnName="Nome">60</ColumnWidth>
+		<ColumnWidth columnName="DataNascimento">8</ColumnWidth>
+		<ColumnWidth columnName="Logradouro">60</ColumnWidth>
+		<ColumnWidth columnName="Bairro">30</ColumnWidth>
+		<ColumnWidth columnName="Cidade">30</ColumnWidth>
+		<ColumnWidth columnName="CEP">8</ColumnWidth>
+		<ColumnWidth columnName="DataContratacaoOper">8</ColumnWidth>
+		<ColumnWidth columnName="DataVencimentoOper">8</ColumnWidth>
+		<ColumnWidth columnName="NumeroSequencialOper">5</ColumnWidth>
+		<ColumnWidth columnName="PrazoOperacao">4</ColumnWidth>
+		<ColumnWidth columnName="ValorOperacao">13</ColumnWidth>
+		<ColumnWidth columnName="ValorSeguro">13</ColumnWidth>
+		<ColumnWidth columnName="TipoLancamento">1</ColumnWidth>
+		<ColumnWidth columnName="CodigoSeguradora">1</ColumnWidth>
+	</ColumnWidths>
+</GenericParser>
