@@ -101,7 +101,6 @@
             this.dataGridView1.ReadOnly = true;
             this.dataGridView1.Size = new System.Drawing.Size(754, 266);
             this.dataGridView1.TabIndex = 3;
-            this.dataGridView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.dataGridView1_KeyUp);
             // 
             // labelQtdeRegistros
             // 

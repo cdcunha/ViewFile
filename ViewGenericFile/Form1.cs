@@ -35,7 +35,7 @@ namespace InterfaceColWeb
                 e.Graphics.DrawString((e.RowIndex + 1).ToString(), e.InheritedRowStyle.Font, b, e.RowBounds.Location.X + 10, e.RowBounds.Location.Y + 4);
             }
         }
-        
+
         private void buttonConfigFile_Click(object sender, EventArgs e)
         {
             openFileDialog1.InitialDirectory = Application.StartupPath;
@@ -52,7 +52,7 @@ namespace InterfaceColWeb
             openFileDialog1.InitialDirectory = Application.StartupPath;
             openFileDialog1.Filter = "Todos os arquivos (*.*)|*.*";
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {   
+            {
                 if (!string.IsNullOrEmpty(labelXMLConfigFile.Text))
                 {
                     dataGridView1.DataSource = null;
@@ -117,71 +117,6 @@ namespace InterfaceColWeb
                 textBoxGotoLine.Visible = false;
                 buttonGotoLine.Visible = false;
             }
-        }
-
-        private void dataGridView1_KeyUp(object sender, KeyEventArgs e)
-        {
-            switch (e.KeyCode)
-            {
-                case Keys.Up: moveUp(); break;
-                case Keys.Down: moveDown(); break;
-                case Keys.PageUp: movePageUp(); break;
-                case Keys.PageDown: movePageDown(); break;
-                default: break;
-            }
-            e.Handled = true;
-        }
-
-        private void movimentGrid(int lines)
-        {
-            if (lines != 0) {
-                if (dataGridView1.RowCount > 0)
-                {
-                    int rowCount = dataGridView1.Rows.Count;
-                    if (lines > 0)
-                    {
-                        if (dataGridView1.FirstDisplayedScrollingRowIndex + lines >= dataGridView1.Rows.Count)
-                        {
-                            dataGridView1.FirstDisplayedScrollingRowIndex = dataGridView1.Rows.Count -1;
-                        }
-                        else
-                        {
-                            dataGridView1.FirstDisplayedScrollingRowIndex += lines;
-                        }
-                    }
-                    else
-                    {
-                        if (dataGridView1.FirstDisplayedScrollingRowIndex - lines <= 0)
-                        {
-                            dataGridView1.FirstDisplayedScrollingRowIndex = 0;
-                        }
-                        else
-                        {
-                            dataGridView1.FirstDisplayedScrollingRowIndex -= lines;
-                        }
-                    }
-                }
-            }
-        }
-
-        private void moveUp()
-        {
-            movimentGrid(-1);
-        }
-
-        private void moveDown()
-        {
-            movimentGrid(1);
-        }
-
-        private void movePageUp()
-        {
-            movimentGrid(-5);
-        }
-
-        private void movePageDown()
-        {
-            movimentGrid(5);
         }
     }
 }
