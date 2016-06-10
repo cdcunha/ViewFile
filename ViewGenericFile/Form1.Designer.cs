@@ -40,6 +40,8 @@
             this.labelQtdeRegistros = new System.Windows.Forms.Label();
             this.buttonGotoLine = new System.Windows.Forms.Button();
             this.dataSet1 = new System.Data.DataSet();
+            this.buttonExecute = new System.Windows.Forms.Button();
+            this.labelFileName = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).BeginInit();
             this.SuspendLayout();
@@ -51,7 +53,7 @@
             // 
             // buttonConfigFile
             // 
-            this.buttonConfigFile.Location = new System.Drawing.Point(12, 17);
+            this.buttonConfigFile.Location = new System.Drawing.Point(12, 4);
             this.buttonConfigFile.Name = "buttonConfigFile";
             this.buttonConfigFile.Size = new System.Drawing.Size(110, 23);
             this.buttonConfigFile.TabIndex = 0;
@@ -63,14 +65,14 @@
             // labelXMLConfigFile
             // 
             this.labelXMLConfigFile.AutoSize = true;
-            this.labelXMLConfigFile.Location = new System.Drawing.Point(128, 22);
+            this.labelXMLConfigFile.Location = new System.Drawing.Point(128, 9);
             this.labelXMLConfigFile.Name = "labelXMLConfigFile";
             this.labelXMLConfigFile.Size = new System.Drawing.Size(0, 13);
             this.labelXMLConfigFile.TabIndex = 1;
             // 
             // textBoxGotoLine
             // 
-            this.textBoxGotoLine.Location = new System.Drawing.Point(222, 49);
+            this.textBoxGotoLine.Location = new System.Drawing.Point(222, 62);
             this.textBoxGotoLine.Name = "textBoxGotoLine";
             this.textBoxGotoLine.Size = new System.Drawing.Size(61, 20);
             this.textBoxGotoLine.TabIndex = 6;
@@ -79,7 +81,7 @@
             // 
             // buttonOpenFile
             // 
-            this.buttonOpenFile.Location = new System.Drawing.Point(13, 47);
+            this.buttonOpenFile.Location = new System.Drawing.Point(13, 33);
             this.buttonOpenFile.Name = "buttonOpenFile";
             this.buttonOpenFile.Size = new System.Drawing.Size(109, 23);
             this.buttonOpenFile.TabIndex = 2;
@@ -96,16 +98,16 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(13, 76);
+            this.dataGridView1.Location = new System.Drawing.Point(13, 98);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.Size = new System.Drawing.Size(754, 266);
+            this.dataGridView1.Size = new System.Drawing.Size(754, 244);
             this.dataGridView1.TabIndex = 3;
             // 
             // labelQtdeRegistros
             // 
             this.labelQtdeRegistros.AutoSize = true;
-            this.labelQtdeRegistros.Location = new System.Drawing.Point(128, 52);
+            this.labelQtdeRegistros.Location = new System.Drawing.Point(128, 65);
             this.labelQtdeRegistros.Name = "labelQtdeRegistros";
             this.labelQtdeRegistros.Size = new System.Drawing.Size(0, 13);
             this.labelQtdeRegistros.TabIndex = 4;
@@ -113,7 +115,7 @@
             // 
             // buttonGotoLine
             // 
-            this.buttonGotoLine.Location = new System.Drawing.Point(289, 47);
+            this.buttonGotoLine.Location = new System.Drawing.Point(289, 60);
             this.buttonGotoLine.Name = "buttonGotoLine";
             this.buttonGotoLine.Size = new System.Drawing.Size(75, 23);
             this.buttonGotoLine.TabIndex = 5;
@@ -125,11 +127,31 @@
             // 
             this.dataSet1.DataSetName = "NewDataSet";
             // 
+            // buttonExecute
+            // 
+            this.buttonExecute.Location = new System.Drawing.Point(13, 60);
+            this.buttonExecute.Name = "buttonExecute";
+            this.buttonExecute.Size = new System.Drawing.Size(109, 23);
+            this.buttonExecute.TabIndex = 13;
+            this.buttonExecute.Text = "Processar";
+            this.buttonExecute.UseVisualStyleBackColor = true;
+            this.buttonExecute.Click += new System.EventHandler(this.buttonExecute_Click);
+            // 
+            // labelFileName
+            // 
+            this.labelFileName.AutoSize = true;
+            this.labelFileName.Location = new System.Drawing.Point(370, 65);
+            this.labelFileName.Name = "labelFileName";
+            this.labelFileName.Size = new System.Drawing.Size(0, 13);
+            this.labelFileName.TabIndex = 17;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(779, 354);
+            this.Controls.Add(this.labelFileName);
+            this.Controls.Add(this.buttonExecute);
             this.Controls.Add(this.textBoxGotoLine);
             this.Controls.Add(this.buttonGotoLine);
             this.Controls.Add(this.labelQtdeRegistros);
@@ -160,6 +182,8 @@
         private System.Windows.Forms.Button buttonGotoLine;
         private System.Windows.Forms.TextBox textBoxGotoLine;
         private System.Data.DataSet dataSet1;
+        private System.Windows.Forms.Button buttonExecute;
+        private System.Windows.Forms.Label labelFileName;
     }
 }
 

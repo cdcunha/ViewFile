@@ -7,10 +7,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 using GenericParsing;
+using System.Data.SqlClient;
 
-namespace InterfaceColWeb
+namespace CompareTextInDB
 {
     public partial class Form1 : Form
     {
@@ -122,6 +122,71 @@ namespace InterfaceColWeb
                     dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
                     dataGridView1.AutoGenerateColumns = true;
                     dataGridView1.DataSource = dataSet1.Tables[0];
+
+                    dataSet1.Tables[0].Columns.Add("Existe", typeof(System.String));
+                    List<String> listCpfFound = new List<String>();
+
+                    if (!string.IsNullOrEmpty(textBoxConnectioString.Text) && !string.IsNullOrEmpty(textBoxQuery.Text))
+                    {
+                        try
+                        {
+                            //Password=sqluser;User ID=sqluser;Data Source=serverss003;Initial Catalog=COL_COLWEBACEITE;Persist Security Info=True
+                            using (var con = new SqlConnection(textBoxConnectioString.Text))
+                            {
+                                string filtro = "";
+                                foreach (DataRow row in dataSet1.Tables[0].Rows)
+                                {
+                                    string text = row[2].ToString();
+                                    string cpf = text.Substring(0, 3) + "." +
+                                                 text.Substring(3, 3) + "." +
+                                                 text.Substring(6, 3) + "-" +
+                                                 text.Substring(9, 2);
+
+                                    text = row[9].ToString();
+                                    string data = text.Substring(4, 4) + text.Substring(2, 2) + text.Substring(0, 2);
+
+                                    string propCia = row[11].ToString().TrimStart('0');
+
+                                    if (string.IsNullOrEmpty(filtro))
+                                    {
+                                        filtro = string.Format(" where (tc.Cgc_cpf = '{0}' and td.Inicio_vigencia = '{1}' and td.Proposta_cia = '{2}')\n", cpf, data, propCia);
+                                    }
+                                    else
+                                    {
+                                        filtro += string.Format(" or (tc.Cgc_cpf = '{0}' and td.Inicio_vigencia = '{1}' and td.Proposta_cia = '{2}')\n", cpf, data, propCia);
+                                    }
+                                }
+                                con.Open();
+                                using (SqlCommand command = new SqlCommand(string.Format(textBoxQuery.Text, filtro), con))
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        listCpfFound.Add(reader.GetString(0));
+                                    }
+                                }
+
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show("Erro ao acessar o banco de dados: " + ex.Message);
+                        }
+                    }
+
+                    foreach (DataRow row in dataSet1.Tables[0].Rows)
+                    {
+                        if (listCpfFound.Where(c => c[0].ToString() == row[2].ToString()).Count() > 0)
+                        {
+                            row["Existe"] = "Sim";
+                        }
+                        else
+                        {
+                            row["Existe"] = "Não";
+                        }
+
+                    }
+
                     dataGridView1.Focus();
                 }
             }
