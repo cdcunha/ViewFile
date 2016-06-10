@@ -139,7 +139,7 @@
             this.Controls.Add(this.buttonConfigFile);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Arquivos de Interface do ColWeb";
+            this.Text = "Visualizador Genérico de Arquivos";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSet1)).EndInit();
