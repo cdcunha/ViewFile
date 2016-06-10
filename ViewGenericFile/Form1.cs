@@ -74,6 +74,7 @@ namespace InterfaceColWeb
                         dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
                         dataGridView1.AutoGenerateColumns = true;
                         dataGridView1.DataSource = dataSet1.Tables[0];
+                        dataGridView1.Focus();
                     }
                 }
             }
