@@ -22,6 +22,8 @@ namespace InterfaceColWeb
             textBoxGotoLine.Visible = false;
             buttonGotoLine.Visible = false;
             buttonExecute.Visible = false;
+            comboBoxEncoding.SelectedIndex = 2;
+            labelQtdeRegistros.Visible = false;
         }
 
         private int convertLabelQtdRegToInt()
@@ -56,11 +58,14 @@ namespace InterfaceColWeb
             {
                 labelFileName.Text = openFileDialog1.FileName;
                 buttonExecute.Visible = true;
+                labelQtdeRegistros.Visible = true;
+                buttonExecute_Click(sender, e);
             }
         }
 
         private void buttonGotoLine_Click(object sender, EventArgs e)
         {
+            Cursor.Current = Cursors.WaitCursor;
             if (!string.IsNullOrEmpty(textBoxGotoLine.Text))
             {
                 try
@@ -83,6 +88,7 @@ namespace InterfaceColWeb
                     MessageBox.Show("Número inválido");
                 }
             }
+            Cursor.Current = Cursors.Default;
         }
 
         private void labelQtdeRegistros_TextChanged(object sender, EventArgs e)
@@ -99,12 +105,56 @@ namespace InterfaceColWeb
             }
         }
 
+        private Encoding GetEncodingFromCombo()
+        {
+            if (comboBoxEncoding.SelectedItem.ToString() == "ASCII")
+            {
+                return Encoding.ASCII;
+            }
+            else if (comboBoxEncoding.SelectedItem.ToString() == "BigEndianUnicode")
+            {
+                return Encoding.BigEndianUnicode;
+            }
+            else if (comboBoxEncoding.SelectedItem.ToString() == "Default")
+            {
+                return Encoding.Default;
+            }
+            else if (comboBoxEncoding.SelectedItem.ToString() == "Padrão")
+            {
+                return Encoding.Default;
+            }
+            else if (comboBoxEncoding.SelectedItem.ToString() == "Unicode")
+            {
+                return Encoding.Unicode;
+            }
+            else if (comboBoxEncoding.SelectedItem.ToString() == "UTF32")
+            {
+                return Encoding.UTF32;
+            }
+            else if (comboBoxEncoding.SelectedItem.ToString() == "UTF7")
+            {
+                return Encoding.UTF7;
+            }
+            else if (comboBoxEncoding.SelectedItem.ToString() == "UTF8")
+            {
+                return Encoding.UTF8;
+            }
+            else
+            {
+                return Encoding.Default;
+            }
+        }
+
         private void buttonExecute_Click(object sender, EventArgs e)
         {
-            if (!string.IsNullOrEmpty(labelXMLConfigFile.Text) && !string.IsNullOrEmpty(labelFileName.Text))
+            Cursor.Current = Cursors.WaitCursor;
+            if (!string.IsNullOrEmpty(labelXMLConfigFile.Text) && labelXMLConfigFile.Text != "Nenhum arquivo selecionado"
+                && !string.IsNullOrEmpty(labelFileName.Text) && labelFileName.Text != "Nenhum arquivo selecionado")
             {
                 dataGridView1.DataSource = null;
-                using (GenericParserAdapter parser = new GenericParserAdapter(labelFileName.Text))
+                dataGridView1.Refresh();
+                
+                using (GenericParserAdapter parser = new GenericParserAdapter(labelFileName.Text, GetEncodingFromCombo()))
                 {
                     parser.Load(labelXMLConfigFile.Text);
                     dataSet1 = parser.GetDataSet();
@@ -124,6 +174,30 @@ namespace InterfaceColWeb
                     dataGridView1.DataSource = dataSet1.Tables[0];
                     dataGridView1.Focus();
                 }
+            }
+            else
+            {
+                string message = "";
+                if (!string.IsNullOrEmpty(labelXMLConfigFile.Text) && labelXMLConfigFile.Text != "Nenhum arquivo selecionado")
+                {
+                    message += "Selecione o arquivo modelo (XML)\n";
+                }
+                if (!string.IsNullOrEmpty(labelFileName.Text) && labelFileName.Text != "Nenhum arquivo selecionado")
+                {
+                    {
+                        message += "Selecione o arquivo texto\n";
+                    }
+                }
+                MessageBox.Show(message);
+            }
+            Cursor.Current = Cursors.Default;
+        }
+
+        private void textBoxGotoLine_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                buttonGotoLine_Click(sender, e);
             }
         }
     }

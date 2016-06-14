@@ -149,7 +149,7 @@ namespace CompareTextInDB
 
                                     if (string.IsNullOrEmpty(filtro))
                                     {
-                                        filtro = string.Format(" where (tc.Cgc_cpf = '{0}' and td.Inicio_vigencia = '{1}' and td.Proposta_cia = '{2}')\n", cpf, data, propCia);
+                                        filtro = string.Format(" (tc.Cgc_cpf = '{0}' and td.Inicio_vigencia = '{1}' and td.Proposta_cia = '{2}')\n", cpf, data, propCia);
                                     }
                                     else
                                     {
@@ -158,11 +158,14 @@ namespace CompareTextInDB
                                 }
                                 con.Open();
                                 using (SqlCommand command = new SqlCommand(string.Format(textBoxQuery.Text, filtro), con))
-                                using (SqlDataReader reader = command.ExecuteReader())
                                 {
-                                    while (reader.Read())
+                                    command.CommandTimeout = 3000;
+                                    using (SqlDataReader reader = command.ExecuteReader())
                                     {
-                                        listCpfFound.Add(reader.GetString(0));
+                                        while (reader.Read())
+                                        {
+                                            listCpfFound.Add(reader.GetString(0).Replace("-","").Replace(".",""));
+                                        }
                                     }
                                 }
 
@@ -176,7 +179,7 @@ namespace CompareTextInDB
 
                     foreach (DataRow row in dataSet1.Tables[0].Rows)
                     {
-                        if (listCpfFound.Where(c => c[0].ToString() == row[2].ToString()).Count() > 0)
+                        if (listCpfFound.Where(c => c == row[2].ToString()).Count() > 0)
                         {
                             row["Existe"] = "Sim";
                         }
