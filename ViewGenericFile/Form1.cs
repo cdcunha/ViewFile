@@ -18,6 +18,10 @@ namespace InterfaceColWeb
         {
             InitializeComponent();
             this.dataGridView1.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView1_RowPostPaint);
+
+            panelFixedWidth.Visible = false;
+            //panelDelimited.Visible = false;
+
             buttonOpenFile.Visible = false;
             textBoxGotoLine.Visible = false;
             buttonGotoLine.Visible = false;
@@ -156,6 +160,9 @@ namespace InterfaceColWeb
                 
                 using (GenericParserAdapter parser = new GenericParserAdapter(labelFileName.Text, GetEncodingFromCombo()))
                 {
+                    //parser.ColumnDelimiter = 
+                    //parser.TextQualifier = 
+                    parser.TextFieldType = FieldType.FixedWidth;
                     parser.Load(labelXMLConfigFile.Text);
                     dataSet1 = parser.GetDataSet();
 
@@ -200,5 +207,18 @@ namespace InterfaceColWeb
                 buttonGotoLine_Click(sender, e);
             }
         }
+
+        private void radioButtonDelimited_CheckedChanged(object sender, EventArgs e)
+        {
+            if (radioButtonDelimitado.Checked)
+            {
+                panelFixedWidth.Visible = false;
+            }
+            else
+            {
+                panelFixedWidth.Visible = true;
+            }
+        }
+        
     }
 }

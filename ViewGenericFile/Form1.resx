@@ -123,6 +123,9 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>157, 17</value>
   </metadata>
+  <metadata name="dataSet1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>254, 17</value>
+  </metadata>
   <data name="buttonConfigFile.ToolTip" xml:space="preserve">
     <value>Abrir um arquivo XML com o mapeamento das colunas do arquivo texto
 Exemplo do XML: 
@@ -133,7 +136,4 @@ Exemplo do XML:
     &lt;/ColumnWidths&gt;
 &lt;/GenericParser&gt;</value>
   </data>
-  <metadata name="dataSet1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>254, 17</value>
-  </metadata>
 </root>
