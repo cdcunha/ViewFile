@@ -253,14 +253,20 @@ namespace InterfaceColWeb
                         {
                             for (int i=0; i < parser.ColumnCount; i++)
                             {
-                                listHeader.Add(parser.GetColumnName(i));
+                                if (string.IsNullOrEmpty(parser.GetColumnName(i))){
+                                    listHeader.Add("Coluna " + (i + 1).ToString());
+                                }
+                                else
+                                {
+                                    listHeader.Add(parser.GetColumnName(i));
+                                }
                             }
                         }
                         if (listHeader.Count() > 0)
                         {
-                            for (int i = 0; i < listHeader.Count; i++)
+                            for (int i = 0; i < parser.ColumnCount; i++)
                             {
-                                listColsInRows.Add(parser[listHeader[i]]);
+                                listColsInRows.Add(parser[i]);
                             }
                         }
                         if (listColsInRows.Count() > 0)
