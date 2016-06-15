@@ -125,6 +125,7 @@
             this.buttonConfigFile.Text = "Abrir arquivo modelo (XML)";
             this.toolTip1.SetToolTip(this.buttonConfigFile, resources.GetString("buttonConfigFile.ToolTip"));
             this.buttonConfigFile.UseVisualStyleBackColor = true;
+            this.buttonConfigFile.Click += new System.EventHandler(this.buttonConfigFile_Click);
             // 
             // dataGridView1
             // 
