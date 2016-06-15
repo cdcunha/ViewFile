@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml;
 using GenericParsing;
+using System.Reflection;
 
 namespace InterfaceColWeb
 {
@@ -28,6 +29,10 @@ namespace InterfaceColWeb
             buttonExecute.Visible = false;
             comboBoxEncoding.SelectedIndex = 2;
             labelQtdeRegistros.Visible = false;
+
+            comboBoxColumnDelimiter.SelectedIndex = 1;
+            buttonOpenFile.Visible = true;
+            comboBoxTextDelimiter.SelectedIndex = 0;
         }
 
         private int convertLabelQtdRegToInt()
@@ -152,17 +157,165 @@ namespace InterfaceColWeb
         private void buttonExecute_Click(object sender, EventArgs e)
         {
             Cursor.Current = Cursors.WaitCursor;
+
+            var checkbox = groupBoxTipoArquivo.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
+            if (checkbox.Text == "Delimitado")
+            {
+                AbrirArquivoDelimitado();
+            }
+            else
+            {
+                AbrirArquivoLaguraFixa();
+            }
+            
+            Cursor.Current = Cursors.Default;
+        }
+
+        private char? GetColumnDelimiterChar()
+        {
+            if (comboBoxColumnDelimiter.SelectedItem.ToString() == "Outro")
+            {
+                return Char.Parse(textBoxOtherDelimiter.Text);
+            }
+            else if (comboBoxColumnDelimiter.SelectedItem.ToString() == "Tabulação")
+            {
+                return '\t';
+            }
+            else if (comboBoxColumnDelimiter.SelectedItem.ToString() == "Vírgula")
+            {
+                return ',';
+            }
+            else if (comboBoxColumnDelimiter.SelectedItem.ToString() == "Espaço")
+            {
+                return ' ';
+            }
+            else if (comboBoxColumnDelimiter.SelectedItem.ToString() == "Ponto e Vírgula")
+            {
+                return ';';
+            }
+            else 
+            {
+                return null;
+            }
+        }
+
+        private char? GetTextDelimiterChar()
+        {
+            if (comboBoxTextDelimiter.SelectedItem.ToString() == "\"")
+            {
+                return '\"';
+            }
+            else if (comboBoxTextDelimiter.SelectedItem.ToString() == "'")
+            {
+                return '\'';
+            }
+
+            else
+            {
+                return null;
+            }
+        }
+
+        private void AbrirArquivoDelimitado() {
+            if (comboBoxColumnDelimiter.SelectedItem.ToString() == "Outro")
+            {
+                if (string.IsNullOrEmpty(textBoxOtherDelimiter.Text))
+                {
+                    MessageBox.Show("Informe o delimitador desejado");
+                    textBoxOtherDelimiter.Focus();
+                    return;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(labelFileName.Text) && labelFileName.Text != "Nenhum arquivo selecionado")
+            {
+                dataGridView1.DataSource = null;
+                dataGridView1.Refresh();
+                using (GenericParser parser = new GenericParser())
+                {
+                    List<string> listHeader = new List<string>();
+                    List<List<string>> listRows = new List<List<string>>();
+
+                    parser.SetDataSource(labelFileName.Text);
+
+                    parser.TextFieldType = FieldType.Delimited;
+                    parser.ColumnDelimiter = GetColumnDelimiterChar();
+                    parser.FirstRowHasHeader = checkBoxPrimeiraLinha.Checked;
+                    //parser.SkipStartingDataRows = 10;
+                    //parser.MaxBufferSize = 4096;
+                    //parser.MaxRows = 500;
+                    parser.TextQualifier = GetTextDelimiterChar();
+                    
+                    while (parser.Read())
+                    {
+                        List<string> listColsInRows = new List<string>();
+                        if (listHeader.Count() == 0)
+                        {
+                            for (int i=0; i < parser.ColumnCount; i++)
+                            {
+                                listHeader.Add(parser.GetColumnName(i));
+                            }
+                        }
+                        if (listHeader.Count() > 0)
+                        {
+                            for (int i = 0; i < listHeader.Count; i++)
+                            {
+                                listColsInRows.Add(parser[listHeader[i]]);
+                            }
+                        }
+                        if (listColsInRows.Count() > 0)
+                        {
+                            listRows.Add(listColsInRows);
+                        }
+                    }
+
+                    DataTable dataTable = new DataTable();
+
+                    foreach (string col in listHeader)
+                    {
+                        dataTable.Columns.Add(col);
+                    }
+
+                    
+                    foreach (List<string> row in listRows)
+                    {
+                        object[] values = new object[row.Count];
+                        foreach (string col in row)
+                        {
+                            values[row.IndexOf(col)] = col;
+                        }
+                        dataTable.Rows.Add(values);
+                    }
+
+                    dataSet1.Tables.Add(dataTable);
+
+                    dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
+                    dataGridView1.AutoGenerateColumns = true;
+                    dataGridView1.DataSource = dataSet1.Tables[0];
+                    dataGridView1.Focus();
+                }
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(labelFileName.Text) && labelFileName.Text != "Nenhum arquivo selecionado")
+                {
+                    {
+                        MessageBox.Show("Selecione o arquivo texto");
+                    }
+                }
+            }
+        }
+        
+        private void AbrirArquivoLaguraFixa()
+        {
             if (!string.IsNullOrEmpty(labelXMLConfigFile.Text) && labelXMLConfigFile.Text != "Nenhum arquivo selecionado"
                 && !string.IsNullOrEmpty(labelFileName.Text) && labelFileName.Text != "Nenhum arquivo selecionado")
             {
                 dataGridView1.DataSource = null;
                 dataGridView1.Refresh();
-                
+
                 using (GenericParserAdapter parser = new GenericParserAdapter(labelFileName.Text, GetEncodingFromCombo()))
                 {
-                    //parser.ColumnDelimiter = 
-                    //parser.TextQualifier = 
-                    parser.TextFieldType = FieldType.FixedWidth;
                     parser.Load(labelXMLConfigFile.Text);
                     dataSet1 = parser.GetDataSet();
 
@@ -197,10 +350,9 @@ namespace InterfaceColWeb
                 }
                 MessageBox.Show(message);
             }
-            Cursor.Current = Cursors.Default;
         }
 
-        private void textBoxGotoLine_KeyUp(object sender, KeyEventArgs e)
+    private void textBoxGotoLine_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -210,15 +362,25 @@ namespace InterfaceColWeb
 
         private void radioButtonDelimited_CheckedChanged(object sender, EventArgs e)
         {
-            if (radioButtonDelimitado.Checked)
+            var checkbox = groupBoxTipoArquivo.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
+            if (checkbox.Text == "Delimitado")
             {
                 panelFixedWidth.Visible = false;
+                buttonOpenFile.Visible = true;
             }
             else
             {
                 panelFixedWidth.Visible = true;
+                buttonOpenFile.Visible = false;
             }
         }
-        
+
+        private void comboBoxColumnDelimiter_SelectedValueChanged(object sender, EventArgs e)
+        {
+            if (comboBoxColumnDelimiter.SelectedItem.ToString() == "Outro")
+                textBoxOtherDelimiter.Visible = true;
+            else
+                textBoxOtherDelimiter.Visible = false;
+        }
     }
 }
