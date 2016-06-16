@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml;
 using GenericParsing;
-using System.Reflection;
+using Utils;
 
 namespace InterfaceColWeb
 {
@@ -18,21 +15,9 @@ namespace InterfaceColWeb
         public Form1()
         {
             InitializeComponent();
+
+            //Used for link event to paint column number in the DataGridView
             this.dataGridView1.RowPostPaint += new System.Windows.Forms.DataGridViewRowPostPaintEventHandler(this.dataGridView1_RowPostPaint);
-
-            panelFixedWidth.Visible = false;
-            //panelDelimited.Visible = false;
-
-            buttonOpenFile.Visible = false;
-            textBoxGotoLine.Visible = false;
-            buttonGotoLine.Visible = false;
-            buttonExecute.Visible = false;
-            comboBoxEncoding.SelectedIndex = 2;
-            labelQtdeRegistros.Visible = false;
-
-            comboBoxColumnDelimiter.SelectedIndex = 1;
-            buttonOpenFile.Visible = true;
-            comboBoxTextDelimiter.SelectedIndex = 0;
         }
 
         private int convertLabelQtdRegToInt()
@@ -74,7 +59,7 @@ namespace InterfaceColWeb
 
         private void buttonGotoLine_Click(object sender, EventArgs e)
         {
-            Cursor.Current = Cursors.WaitCursor;
+            ToggleCursorMouse();
             if (!string.IsNullOrEmpty(textBoxGotoLine.Text))
             {
                 try
@@ -97,20 +82,20 @@ namespace InterfaceColWeb
                     MessageBox.Show("Número inválido");
                 }
             }
-            Cursor.Current = Cursors.Default;
+            ToggleCursorMouse();
         }
 
         private void labelQtdeRegistros_TextChanged(object sender, EventArgs e)
         {
             if (convertLabelQtdRegToInt() > 0)
             {
-                textBoxGotoLine.Visible = true;
-                buttonGotoLine.Visible = true;
+                buttonOpenSearchPanel.Visible = true;
+                panelSearch.Visible = true;
             }
             else
             {
-                textBoxGotoLine.Visible = false;
-                buttonGotoLine.Visible = false;
+                buttonOpenSearchPanel.Visible = false;
+                panelSearch.Visible = false;
             }
         }
 
@@ -154,9 +139,22 @@ namespace InterfaceColWeb
             }
         }
 
+        private void FillComboSearchColumn()
+        {
+            comboBoxSearchColumn.Items.Clear();
+            if (dataSet1.Tables.Count > 1)
+            {
+                foreach (DataColumn col in dataSet1.Tables[0].Columns)
+                {
+                    comboBoxSearchColumn.Items.Add(col.ToString());
+                }
+            }
+            comboBoxSearchColumn.Refresh();
+        }
+
         private void buttonExecute_Click(object sender, EventArgs e)
         {
-            Cursor.Current = Cursors.WaitCursor;
+            ToggleCursorMouse();
 
             var checkbox = groupBoxTipoArquivo.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
             if (checkbox.Text == "Delimitado")
@@ -167,8 +165,9 @@ namespace InterfaceColWeb
             {
                 AbrirArquivoLaguraFixa();
             }
-            
-            Cursor.Current = Cursors.Default;
+            FillComboSearchColumn();
+
+            ToggleCursorMouse();
         }
 
         private char? GetColumnDelimiterChar()
@@ -231,6 +230,7 @@ namespace InterfaceColWeb
             {
                 dataGridView1.DataSource = null;
                 dataGridView1.Refresh();
+                dataSet1.Tables.Clear();
                 using (GenericParser parser = new GenericParser())
                 {
                     List<string> listHeader = new List<string>();
@@ -295,6 +295,8 @@ namespace InterfaceColWeb
 
                     dataSet1.Tables.Add(dataTable);
 
+                    VerifyGridNumRowAndSetLabelReg(dataSet1.Tables[0].Rows.Count);
+
                     dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
                     dataGridView1.AutoGenerateColumns = true;
                     dataGridView1.DataSource = dataSet1.Tables[0];
@@ -311,6 +313,18 @@ namespace InterfaceColWeb
                 }
             }
         }
+
+        private void VerifyGridNumRowAndSetLabelReg(int count)
+        {
+            if (count > 1)
+            {
+                labelQtdeRegistros.Text = String.Format("{0:#,##0} Registros", count);
+            }
+            else
+            {
+                labelQtdeRegistros.Text = String.Format("{0:#,##0} Registro", count);
+            }
+        }
         
         private void AbrirArquivoLaguraFixa()
         {
@@ -324,16 +338,8 @@ namespace InterfaceColWeb
                 {
                     parser.Load(labelXMLConfigFile.Text);
                     dataSet1 = parser.GetDataSet();
-
-                    int qtdRegistros = dataSet1.Tables[0].Rows.Count;
-                    if (qtdRegistros > 1)
-                    {
-                        labelQtdeRegistros.Text = String.Format("{0:#,##0} Registros", dataSet1.Tables[0].Rows.Count);
-                    }
-                    else
-                    {
-                        labelQtdeRegistros.Text = String.Format("{0:#,##0} Registro", dataSet1.Tables[0].Rows.Count);
-                    }
+                    
+                    VerifyGridNumRowAndSetLabelReg(dataSet1.Tables[0].Rows.Count);
 
                     dataGridView1.AutoResizeColumns(DataGridViewAutoSizeColumnsMode.AllCellsExceptHeader);
                     dataGridView1.AutoGenerateColumns = true;
@@ -358,7 +364,7 @@ namespace InterfaceColWeb
             }
         }
 
-    private void textBoxGotoLine_KeyUp(object sender, KeyEventArgs e)
+        private void textBoxGotoLine_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
@@ -373,11 +379,13 @@ namespace InterfaceColWeb
             {
                 panelFixedWidth.Visible = false;
                 buttonOpenFile.Visible = true;
+                labelXMLConfigFile.Text = "Não é necessário";
             }
             else
             {
                 panelFixedWidth.Visible = true;
                 buttonOpenFile.Visible = false;
+                labelXMLConfigFile.Text = "Nenhum arquivo selecionado";
             }
         }
 
@@ -387,6 +395,129 @@ namespace InterfaceColWeb
                 textBoxOtherDelimiter.Visible = true;
             else
                 textBoxOtherDelimiter.Visible = false;
+        }
+
+        private DialogResult ShowDialogYesNo(string msg, string title)
+        {
+            return MessageBox.Show(msg, title, MessageBoxButtons.YesNo);
+        }
+
+        private void ToggleCursorMouse()
+        {
+            if (Cursor.Current == Cursors.Default)
+                Cursor.Current = Cursors.WaitCursor;
+            else 
+                Cursor.Current = Cursors.Default;
+        }
+
+        private void DataGridViewSelectLine(int numLin)
+        {
+            dataGridView1.Rows[numLin].Selected = true;
+            dataGridView1.FirstDisplayedScrollingRowIndex = numLin;
+        }
+        
+        private void SearchValueInColumn(int colIndex, string value)
+        {
+            if (!string.IsNullOrEmpty(value))
+            {
+                if (dataSet1.Tables[0].Rows.Count > 0)
+                {
+                    ToggleCursorMouse();
+
+                    bool wasFound = false;
+
+                    dataGridView1.DataSource = null;
+                    dataGridView1.Refresh();
+                    dataGridView1.DataSource = dataSet1.Tables[0];
+                    foreach (DataRow row in dataSet1.Tables[0].Rows)
+                    {
+                        if (checkBoxSearchPartial.Checked)
+                        {
+                            if (row.ItemArray[colIndex].ToString().Like(value))
+                            {
+                                DataGridViewSelectLine(dataSet1.Tables[0].Rows.IndexOf(row));
+                                wasFound = true;
+                                ToggleCursorMouse();
+                                if (ShowDialogYesNo("Continuar busca?", string.Format("Procurando por {0}", value)) == DialogResult.No)
+                                {
+                                    break;
+                                }
+                                ToggleCursorMouse();
+                            }
+                        }
+                        else
+                        {
+                            if (row.ItemArray[colIndex].ToString().ToUpper() == value.ToUpper())
+                            {
+                                DataGridViewSelectLine(dataSet1.Tables[0].Rows.IndexOf(row));
+                                wasFound = true;
+                                ToggleCursorMouse();
+                                if (ShowDialogYesNo("Continuar busca?", string.Format("Procurando por {0}", value)) == DialogResult.No)
+                                {
+                                    break;
+                                }
+                                ToggleCursorMouse();
+                            }
+                        }
+                    }
+                    ToggleCursorMouse();
+                    if (!wasFound)
+                    {
+                        MessageBox.Show("O texto informado não foi encontrado na coluna selecionada");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Digite um valor para buscar");
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            panelFixedWidth.Visible = false;
+            buttonOpenSearchPanel.Visible = false;
+            buttonExecute.Visible = false;
+            comboBoxEncoding.SelectedIndex = 2;
+            labelQtdeRegistros.Visible = false;
+
+            comboBoxColumnDelimiter.SelectedIndex = 1;
+            comboBoxTextDelimiter.SelectedIndex = 0;
+            radioButtonDelimited_CheckedChanged(sender, e);
+        }
+
+        private void buttonOpenSearchPanel_Click(object sender, EventArgs e)
+        {
+            panelSearch.Visible = !panelSearch.Visible;
+            if (buttonOpenSearchPanel.Text.Like("Abrir%"))
+            {
+                buttonOpenSearchPanel.Text = "Fechar Pesquisa";
+            }
+            else
+            {
+                buttonOpenSearchPanel.Text = "Abrir Pesquisa";
+            }
+        }
+
+        private void buttonSearch_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(textBoxSearch.Text) || comboBoxSearchColumn.SelectedItem == null)
+            {
+                string message = "";
+                if (string.IsNullOrEmpty(textBoxSearch.Text))
+                {
+                    message = "Informe o texto\n";
+                    textBoxSearch.Focus();
+                }
+                if (comboBoxSearchColumn.SelectedItem == null)
+                {
+                    message = "Informe a coluna\n";
+                    comboBoxSearchColumn.Focus();
+                }
+                MessageBox.Show(message);
+            }   
+            else
+                SearchValueInColumn(comboBoxSearchColumn.Items.IndexOf(comboBoxSearchColumn.SelectedItem), textBoxSearch.Text);
         }
     }
 }
