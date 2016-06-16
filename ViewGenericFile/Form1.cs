@@ -142,7 +142,7 @@ namespace InterfaceColWeb
         private void FillComboSearchColumn()
         {
             comboBoxSearchColumn.Items.Clear();
-            if (dataSet1.Tables.Count > 1)
+            if (dataSet1.Tables.Count > 0)
             {
                 foreach (DataColumn col in dataSet1.Tables[0].Columns)
                 {
@@ -374,6 +374,7 @@ namespace InterfaceColWeb
 
         private void radioButtonDelimited_CheckedChanged(object sender, EventArgs e)
         {
+            InitialValues();
             var checkbox = groupBoxTipoArquivo.Controls.OfType<RadioButton>().FirstOrDefault(r => r.Checked);
             if (checkbox.Text == "Delimitado")
             {
@@ -433,7 +434,7 @@ namespace InterfaceColWeb
                     {
                         if (checkBoxSearchPartial.Checked)
                         {
-                            if (row.ItemArray[colIndex].ToString().Like(value))
+                            if (row.ItemArray[colIndex].ToString().ToUpper().Like(value.ToUpper()))
                             {
                                 DataGridViewSelectLine(dataSet1.Tables[0].Rows.IndexOf(row));
                                 wasFound = true;
@@ -475,12 +476,10 @@ namespace InterfaceColWeb
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            InitialValues();
             panelFixedWidth.Visible = false;
-            buttonOpenSearchPanel.Visible = false;
-            buttonExecute.Visible = false;
             comboBoxEncoding.SelectedIndex = 2;
-            labelQtdeRegistros.Visible = false;
-
+            
             comboBoxColumnDelimiter.SelectedIndex = 1;
             comboBoxTextDelimiter.SelectedIndex = 0;
             radioButtonDelimited_CheckedChanged(sender, e);
@@ -518,6 +517,16 @@ namespace InterfaceColWeb
             }   
             else
                 SearchValueInColumn(comboBoxSearchColumn.Items.IndexOf(comboBoxSearchColumn.SelectedItem), textBoxSearch.Text);
+        }
+
+        private void InitialValues()
+        {
+            buttonOpenSearchPanel.Visible = false;
+            buttonExecute.Visible = false;
+            labelQtdeRegistros.Visible = false;
+            panelSearch.Visible = false;
+            labelXMLConfigFile.Text = "Nenhum arquivo selecionado";
+            labelFileName.Text = "Nenhum arquivo selecionado";
         }
     }
 }
