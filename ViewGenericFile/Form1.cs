@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using GenericParsing;
-using Utils;
+using ViewGenericFile.Helpers;
 
 namespace InterfaceColWeb
 {
@@ -259,6 +259,23 @@ namespace InterfaceColWeb
                                 else
                                 {
                                     listHeader.Add(parser.GetColumnName(i));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (listHeader.Count() < parser.ColumnCount)
+                            {
+                                for (int i = listHeader.Count(); i < parser.ColumnCount; i++)
+                                {
+                                    if (string.IsNullOrEmpty(parser.GetColumnName(i)))
+                                    {
+                                        listHeader.Add("Coluna " + (i + 1).ToString());
+                                    }
+                                    else
+                                    {
+                                        listHeader.Add(parser.GetColumnName(i));
+                                    }
                                 }
                             }
                         }
